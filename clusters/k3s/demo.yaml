@@ -716,3 +716,67 @@ spec:
         - "/dev/null"
         volumeMounts:
 ---
+# Source: helm/templates/api-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-api
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-api
+        version: v4
+    spec:
+      containers:
+      - name: api
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "api"
+          - "-server"
+          - demo-nats
+        imagePullPolicy: Always
+        env:
+          - name: APP_BACKEND
+            value: "iscii"
+          - name: APP_DATASTORE
+            value: "data"
+          - name: APP_DB
+            value: "root@tcp(db:3306)/demo"
+          - name: APP_CACHE
+            value: "demo-redis-master"
+          - name: APP_LICENSE
+            valueFrom:
+              secretKeyRef:
+                name: demo-secret
+                key: license
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 3
+---
