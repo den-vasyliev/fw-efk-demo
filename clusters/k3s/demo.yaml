@@ -924,7 +924,6 @@ spec:
             memory: 100Mi
         ports:
         - containerPort: 8080
-        name: data
         securityContext:
         livenessProbe:
           httpGet:
