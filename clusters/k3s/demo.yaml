@@ -1,3 +1,15 @@
+# Source: helm/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: demo
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+---
 # Source: helm/charts/mysql/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
