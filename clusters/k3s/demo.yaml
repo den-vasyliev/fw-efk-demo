@@ -1,31 +1,32 @@
-apiVersion: v1
-kind: Pod
+# Source: helm/charts/mysql/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: "demo-nats-test-request-reply"
+  name: demo-mysql
+  namespace: demo
   labels:
-    chart: nats-0.18.0
-    app: demo-nats-test-request-reply
-  annotations:
-    "helm.sh/hook": test
+    service: demo-mysql
 spec:
-  containers:
-  - name: nats-box
-    image: synadia/nats-box
-    env:
-    - name: NATS_HOST
-      value: demo-nats
-    command:
-    - /bin/sh
-    - -ec
-    - |
-      nats reply -s nats://$NATS_HOST:4222 'name.>' --command "echo 1" &
-    - |
-      "&&"
-    - |
-      name=$(nats request -s nats://$NATS_HOST:4222 name.test '' 2>/dev/null)
-    - |
-      "&&"
-    - |
-      [ $name = test ]
-
-  restartPolicy: Never
+  selector:
+    matchLabels:
+      app: demo-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql  # or just image: percona
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "true"
+        - name: MYSQL_DATABASE
+          value: "demo"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 3306
