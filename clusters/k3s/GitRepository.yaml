@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: demo-chart
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  ref:
+    branch: master
+  url: https://github.com/den-vasyliev/go-demo-app
