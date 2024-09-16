@@ -780,3 +780,52 @@ spec:
           initialDelaySeconds: 0
           periodSeconds: 3
 ---
+# Source: helm/templates/ascii-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-ascii
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-ascii
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-ascii
+        version: v4
+    spec:
+      containers:
+      - name: ascii
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "ascii"
+          - "-server"
+          - demo-nats
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          periodSeconds: 3
+---
