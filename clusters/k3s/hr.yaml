@@ -11,5 +11,5 @@ spec:
       reconcileStrategy: Revision
       sourceRef:
         kind: GitRepository
-        name: demo-chart
+        name: demo
   interval: 10m0s
