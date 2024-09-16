@@ -12,4 +12,5 @@ spec:
       sourceRef:
         kind: GitRepository
         name: demo
+        namespace: flux-system
   interval: 10m0s
