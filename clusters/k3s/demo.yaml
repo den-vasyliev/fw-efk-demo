@@ -1,4 +1,15 @@
-
+---
+# Source: helm/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: demo
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
 ---
 # Source: helm/charts/redis/templates/networkpolicy.yaml
 kind: NetworkPolicy
@@ -587,4 +598,344 @@ spec:
     targetPort: 8080
   selector:
     app: demo-img
+---
+# Source: helm/charts/api-gateway/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ambassador
+  namespace: demo
+spec:
+  selector:
+    matchLabels:
+      service: ambassador
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        service: ambassador
+    spec:
+      serviceAccountName: ambassador
+      containers:
+      - name: ambassador
+        image: quay.io/datawire/ambassador:0.51.2
+        resources:
+          limits:
+            cpu: 500m
+            memory: 400Mi
+          requests:
+            cpu: 200m
+            memory: 200Mi
+        env:
+        - name: AMBASSADOR_SINGLE_NAMESPACE
+          value: demo
+        - name: AMBASSADOR_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace          
+        livenessProbe:
+          httpGet:
+            path: /ambassador/v0/check_alive
+            port: 8877
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /ambassador/v0/check_ready
+            port: 8877
+          initialDelaySeconds: 30
+          periodSeconds: 3
+---
+# Source: helm/charts/mysql/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-mysql
+  namespace: demo
+  labels:
+    service: demo-mysql
+spec:
+  selector:
+    matchLabels:
+      app: demo-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql  # or just image: percona
+        env:
+        - name: MYSQL_ALLOW_EMPTY_PASSWORD
+          value: "true"
+        - name: MYSQL_DATABASE
+          value: "demo"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 3306
+---
+# Source: helm/charts/nats/templates/nats-box.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-nats-box
+  namespace: demo
+  labels:
+    app: demo-nats-box
+    chart: nats-0.18.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-nats-box
+  template:
+    metadata:
+      labels:
+        app: demo-nats-box
+    spec:
+      volumes:
+      containers:
+      - name: nats-box
+        image: natsio/nats-box:0.13.0
+        imagePullPolicy: IfNotPresent
+        resources:
+          null
+        env:
+        - name: NATS_URL
+          value: demo-nats
+        command:
+        - "tail"
+        - "-f"
+        - "/dev/null"
+        volumeMounts:
+---
+# Source: helm/templates/api-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-api
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-api
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-api
+        version: v4
+    spec:
+      containers:
+      - name: api
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "api"
+          - "-server"
+          - demo-nats
+        imagePullPolicy: Always
+        env:
+          - name: APP_BACKEND
+            value: "iscii"
+          - name: APP_DATASTORE
+            value: "data"
+          - name: APP_DB
+            value: "root@tcp(db:3306)/demo"
+          - name: APP_CACHE
+            value: "demo-redis-master"
+          - name: APP_LICENSE
+            valueFrom:
+              secretKeyRef:
+                name: demo-secret
+                key: license
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 3
+---
+# Source: helm/templates/ascii-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-ascii
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-ascii
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-ascii
+        version: v4
+    spec:
+      containers:
+      - name: ascii
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "ascii"
+          - "-server"
+          - demo-nats
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          periodSeconds: 3
+---
+# Source: helm/templates/data-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-data
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-data
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-data
+        version: v4
+    spec:
+      containers:
+      - name: data
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "data"
+          - "-server"
+          - demo-nats
+        env:
+          - name: APP_DB
+            value: "root@tcp(demo-mysql:3306)/demo"
+          - name: APP_CACHE
+            value: "demo-redis-master"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+        name: data
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 3
+---
+# Source: helm/templates/img-deploy.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: demo-img
+  namespace: demo
+  labels:
+    version: v4
+spec:
+  selector:
+    matchLabels:
+      app: demo-img
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demo-img
+        version: v4
+    spec:
+      containers:
+      - name: img
+        image: denvasyliev/k8sdiy:build-b1ee187
+        command:
+          - ./app
+          - "-role"
+          - "img"
+          - "-r"
+          - "0.2"
+          - "-server"
+          - demo-nats
+        imagePullPolicy: Always
+        env:
+          - name: APP_DB
+            value: "root@tcp(db:3306)/demo"
+          - name: APP_CACHE
+            value: "demo-redis-master"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8080
+        securityContext:
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readinez
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 3
 ---
