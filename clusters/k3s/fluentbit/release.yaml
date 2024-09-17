@@ -23,7 +23,7 @@ spec:
           Host quickstart-es-default 
           Logstash_Format On
           Retry_Limit False
-  
+
         [OUTPUT]
           Name es
           Match host.*
