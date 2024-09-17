@@ -27,6 +27,7 @@ spec:
             Port ${FLUENT_ELASTICSEARCH_PORT}
             HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
             HTTP_User ${FLUENT_ELASTICSEARCH_USER}
+            Suppress_Type_Name On
             Logstash_Format On
             Retry_Limit False
             tls On
