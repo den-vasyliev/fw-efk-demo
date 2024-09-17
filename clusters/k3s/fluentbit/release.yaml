@@ -16,14 +16,14 @@ spec:
   interval: 5m0s
   values:
     outputs: |
-    [OUTPUT]
+      [OUTPUT]
         Name es
         Match kube.*
         Host quickstart-es-default 
         Logstash_Format On
         Retry_Limit False
 
-    [OUTPUT]
+      [OUTPUT]
         Name es
         Match host.*
         Host quickstart-es-default 
