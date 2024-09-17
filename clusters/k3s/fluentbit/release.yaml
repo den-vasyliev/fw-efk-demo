@@ -1,0 +1,16 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: fluent
+  namespace: default
+spec:
+  chart:
+    spec:
+      chart: ./charts/fluent-bit
+      reconcileStrategy: Revision
+      sourceRef:
+        kind: GitRepository
+        name: fluent
+        namespace: default
+  interval: 5m0s
