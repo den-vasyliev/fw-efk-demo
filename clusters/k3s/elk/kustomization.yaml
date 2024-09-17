@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - https://download.elastic.co/downloads/eck/2.14.0/crds.yaml
 - https://download.elastic.co/downloads/eck/2.14.0/operator.yaml
+- elk.yaml
