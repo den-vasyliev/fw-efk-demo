@@ -18,16 +18,16 @@ spec:
     config:
       outputs: |
         [OUTPUT]
-          Name es
-          Match kube.*
-          Host quickstart-es-default 
-          Logstash_Format On
-          Retry_Limit False
+            Name es
+            Match kube.*
+            Host quickstart-es-default 
+            Logstash_Format On
+            Retry_Limit False
 
         [OUTPUT]
-          Name es
-          Match host.*
-          Host quickstart-es-default 
-          Logstash_Format On
-          Logstash_Prefix node
-          Retry_Limit False
+            Name es
+            Match host.*
+            Host quickstart-es-default 
+            Logstash_Format On
+            Logstash_Prefix node
+            Retry_Limit False  
