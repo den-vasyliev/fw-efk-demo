@@ -14,8 +14,8 @@ spec:
         name: fluent
         namespace: default
   interval: 5m0s
-values:
-  outputs: |
+  values:
+    outputs: |
     [OUTPUT]
         Name es
         Match kube.*
