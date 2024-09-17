@@ -24,6 +24,7 @@ spec:
             Logstash_Format On
             Retry_Limit False
             tls On
+            tls.verify Off
 
         [OUTPUT]
             Name es
@@ -31,5 +32,6 @@ spec:
             Host quickstart-es-default 
             Logstash_Format On
             tls ON
+            tls.verify Off
             Logstash_Prefix node
             Retry_Limit False  
