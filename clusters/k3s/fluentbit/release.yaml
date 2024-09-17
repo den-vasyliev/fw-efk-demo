@@ -23,11 +23,13 @@ spec:
             Host quickstart-es-default 
             Logstash_Format On
             Retry_Limit False
+            tls On
 
         [OUTPUT]
             Name es
             Match host.*
             Host quickstart-es-default 
             Logstash_Format On
+            tls ON
             Logstash_Prefix node
             Retry_Limit False  
