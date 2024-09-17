@@ -15,12 +15,17 @@ spec:
         namespace: default
   interval: 5m0s
   values:
+    envFrom:
+      - secretRef: 
+          name: fluent-env
     config:
       outputs: |
         [OUTPUT]
             Name es
             Match kube.*
-            Host quickstart-es-default 
+            Host ${FLUENT_ELASTICSEARCH_HOST}
+            HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
+            HTTP_User ${FLUENT_ELASTICSEARCH_USER}
             Logstash_Format On
             Retry_Limit False
             tls On
@@ -29,7 +34,9 @@ spec:
         [OUTPUT]
             Name es
             Match host.*
-            Host quickstart-es-default 
+            Host ${FLUENT_ELASTICSEARCH_HOST}
+            HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
+            HTTP_User ${FLUENT_ELASTICSEARCH_USER}
             Logstash_Format On
             tls ON
             tls.verify Off
