@@ -24,6 +24,7 @@ spec:
             Name es
             Match kube.*
             Host ${FLUENT_ELASTICSEARCH_HOST}
+            Port ${FLUENT_ELASTICSEARCH_PORT}
             HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
             HTTP_User ${FLUENT_ELASTICSEARCH_USER}
             Logstash_Format On
@@ -35,6 +36,7 @@ spec:
             Name es
             Match host.*
             Host ${FLUENT_ELASTICSEARCH_HOST}
+            Port ${FLUENT_ELASTICSEARCH_PORT}
             HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
             HTTP_User ${FLUENT_ELASTICSEARCH_USER}
             Logstash_Format On
