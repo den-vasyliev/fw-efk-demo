@@ -18,6 +18,8 @@ spec:
     envFrom:
       - secretRef: 
           name: fluent-env
+    podLabels:
+      app: fluent-bit
     config:
       filters: |
         [FILTER]
