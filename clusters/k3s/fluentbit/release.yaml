@@ -22,13 +22,14 @@ spec:
       outputs: |
         [OUTPUT]
             Name es
-            Match kube.*
+            Match *.*
             Host ${FLUENT_ELASTICSEARCH_HOST}
             Port ${FLUENT_ELASTICSEARCH_PORT}
             HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
             HTTP_User ${FLUENT_ELASTICSEARCH_USER}
             Suppress_Type_Name On
             Logstash_Format On
+            Write_Operation upsert
             Retry_Limit False
             tls On
             tls.verify Off
