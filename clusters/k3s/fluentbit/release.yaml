@@ -19,6 +19,19 @@ spec:
       - secretRef: 
           name: fluent-env
     config:
+      filters: |
+        [FILTER]
+            Name kubernetes
+            Match kube.*
+            Merge_Log On
+            Keep_Log Off
+            K8S-Logging.Parser On
+            K8S-Logging.Exclude On
+  
+        [FILTER]
+          Name grep
+          Match *
+          Regex $kubernetes['labels']['app'] fluent-bit
       outputs: |
         [OUTPUT]
             Name es                                              
