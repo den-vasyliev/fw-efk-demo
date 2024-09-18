@@ -48,7 +48,5 @@ spec:
             Generate_ID On                               
             Retry_Limit False                            
             tls On                                       
-            tls.verify Off                               
-            Trace_Error       On                         
-            Trace_Output      On                         
+            tls.verify Off                                                     
             Replace_Dots On
