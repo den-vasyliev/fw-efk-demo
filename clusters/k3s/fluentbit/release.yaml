@@ -29,9 +29,9 @@ spec:
             K8S-Logging.Exclude On
   
         [FILTER]
-          Name grep
-          Match *
-          Regex $kubernetes['labels']['app'] fluent-bit
+            Name grep
+            Match *
+            Regex $kubernetes['labels']['app'] fluent-bit
       outputs: |
         [OUTPUT]
             Name es                                              
