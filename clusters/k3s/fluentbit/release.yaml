@@ -30,6 +30,7 @@ spec:
             Suppress_Type_Name On
             Logstash_Format On
             Write_Operation upsert
+            Generate_ID On
             Retry_Limit False
             tls On
             tls.verify Off
