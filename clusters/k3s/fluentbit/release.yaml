@@ -21,17 +21,19 @@ spec:
     config:
       outputs: |
         [OUTPUT]
-            Name es
-            Match *.*
-            Host ${FLUENT_ELASTICSEARCH_HOST}
-            Port ${FLUENT_ELASTICSEARCH_PORT}
-            HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}
-            HTTP_User ${FLUENT_ELASTICSEARCH_USER}
-            Suppress_Type_Name On
-            Logstash_Format On
-            Write_Operation upsert
-            Generate_ID On
-            Retry_Limit False
-            tls On
-            tls.verify Off
-
+            Name es                                              
+            Match *.*                                            
+            Host ${FLUENT_ELASTICSEARCH_HOST}                    
+            Port ${FLUENT_ELASTICSEARCH_PORT}                    
+            HTTP_Passwd ${FLUENT_ELASTICSEARCH_PASSWD}   
+            HTTP_User ${FLUENT_ELASTICSEARCH_USER}       
+            Suppress_Type_Name On                        
+            Logstash_Format On                           
+            Write_Operation upsert                       
+            Generate_ID On                               
+            Retry_Limit False                            
+            tls On                                       
+            tls.verify Off                               
+            Trace_Error       On                         
+            Trace_Output      On                         
+            Replace_Dots On
